@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Hitbox
+  - OrcHitbox
+  - Orc
+  - Bag
+  - Gate
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Wall
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Wall
+    uniqueID: 3902656643
+    locked: 0
+  - name: Trail
+    uniqueID: 1267820819
+    locked: 0
+  - name: Player
+    uniqueID: 399641247
+    locked: 0
+  - name: Item
+    uniqueID: 1124881601
+    locked: 0
+  - name: New Layer 5
+    uniqueID: 1988009113
+    locked: 0
