@@ -13,7 +13,7 @@ public class Slot : MonoBehaviour
     {
         if(transform.childCount <= 1)
         {
-            InventorySystem.instance.isFull[i] = false;
+            InventorySystem.Instance.isFull[i] = false;
         }
     }
 }

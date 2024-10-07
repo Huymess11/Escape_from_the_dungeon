@@ -5,26 +5,28 @@ using UnityEngine;
 public class PickUp : MonoBehaviour
 {
     public GameObject itemButton;
-    public Transform Bag;
+    Transform Bag;
+    RectTransform bagRectTransform;
 
     void Start()
     {
         Bag = GameObject.FindGameObjectWithTag("Bag").transform;
+        bagRectTransform = Bag.GetComponent<RectTransform>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        for(int i = 0; i < InventorySystem.instance.slot.Length; i++)
+        for(int i = 0; i < InventorySystem.Instance.slot.Length; i++)
         {
-            if (InventorySystem.instance.isFull[i]== false)
+            if (InventorySystem.Instance.isFull[i]== false)
             {
-                transform.position = Vector3.MoveTowards(transform.position, Bag.position, 0.3f);
+                Vector3 bagWorldPosition = bagRectTransform.position;
+                transform.position = Vector3.MoveTowards(transform.position, bagWorldPosition, 0.3f);
                 if(transform.position == Bag.position)
                 {
-                    InventorySystem.instance.isFull[i] = true;
+                    InventorySystem.Instance.isFull[i] = true;
                     Destroy(gameObject);
-                    Instantiate(itemButton, InventorySystem.instance.slot[i].transform,false);
+                    Instantiate(itemButton, InventorySystem.Instance.slot[i].transform,false);
                 }
                 break;
             }

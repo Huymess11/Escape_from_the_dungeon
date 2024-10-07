@@ -97,5 +97,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 408e447ff1310504780f4dd3c92aedd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemButton: {fileID: 1770930331379260676, guid: 6587bf2898321da41b3541a4febddaaf, type: 3}
-  Bag: {fileID: 0}
+  itemButton: {fileID: 2196733678702071304, guid: 60062c9632354604fa6deec2e8692276, type: 3}

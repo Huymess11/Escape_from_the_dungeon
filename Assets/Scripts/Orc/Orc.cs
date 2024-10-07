@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UIElements;
 
 public class Orc : MonoBehaviour
 {
-    [Header("Singleton")]
-    public static Orc instance;
 
     [Header("Idle")]
     private Transform target;
@@ -30,29 +29,37 @@ public class Orc : MonoBehaviour
     private bool isDead = false;
 
     [Header("Orther")]
-    Vector2 Home;
+    Vector3 Home;
     private Animator ani;
     private Collider2D collider;
     private Rigidbody2D rb;
+    private NavMeshAgent agent;
 
     private void Awake()
     {
-        Orc.instance = this;
         rb = GetComponent<Rigidbody2D>();
         collider = GetComponent<Collider2D>();
         ani = GetComponent<Animator>();
     }
     void Start()
     {
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
         target = FindObjectOfType<Player>().transform;
         Home = transform.position;
     }
-
 
     void Update()
     {
         if (isDead) return;
         if (isDmg) return;
+        if (agent != null)
+        {
+            Vector3 pos = transform.position;
+            pos.z = 0;
+            transform.position = pos;
+        }
         if (Vector3.Distance(target.position, transform.position) < maxDis && Vector3.Distance(target.position, transform.position) > minDis)
         {
             OrcWalking();
@@ -69,6 +76,7 @@ public class Orc : MonoBehaviour
     public void SetOrcDead()
     {
         isDead = true;
+        agent.speed = 0;
     }
     public IEnumerator OrcDmg()
     {
@@ -87,6 +95,7 @@ public class Orc : MonoBehaviour
     {
         ani.SetBool("isAttack", true);
         ani.SetBool("isMoving", false);
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.attack);
         isAttack = true;
         yield return null;
         ani.SetBool("isAttack", false);
@@ -95,10 +104,11 @@ public class Orc : MonoBehaviour
     }
     private void OrcGoHome()
     {
-        transform.position = Vector3.MoveTowards(transform.position, Home, speed * Time.deltaTime);
+        //transform.position = Vector3.MoveTowards(transform.position, Home, speed * Time.deltaTime);
+        agent.SetDestination(Home);
         ani.SetFloat("horizontal", Home.x - transform.position.x);
         ani.SetFloat("vertical", Home.y - transform.position.y);
-        if (Vector3.Distance(transform.position, Home) == 0)
+        if (Vector3.Distance(transform.position,Home)<0.1f)
         {
             ani.SetBool("isMoving", false);
         }
@@ -108,14 +118,15 @@ public class Orc : MonoBehaviour
         ani.SetBool("isMoving", true);
         ani.SetFloat("horizontal", target.position.x - transform.position.x);
         ani.SetFloat("vertical", target.position.y - transform.position.y);
-        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+       // transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        agent.SetDestination(target.position);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Hitbox"))
         {
-            OrcHealth.instance.TakeDamage(25);
             StartCoroutine(OrcDmg());
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.hit);
         }
     }
 }

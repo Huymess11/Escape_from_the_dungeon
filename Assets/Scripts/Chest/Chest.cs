@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class Chest : MonoBehaviour
 {
@@ -8,7 +10,8 @@ public class Chest : MonoBehaviour
     private bool isUnlock;
 
     [Header("Orther")]
-    public GameObject item;
+    [SerializeField] private ItemData itemData;
+    public ItemType itemType;
     Animator ani;
     Collider2D c2d;
 
@@ -18,21 +21,22 @@ public class Chest : MonoBehaviour
         ani = GetComponent<Animator>();
         c2d  = GetComponent<Collider2D>();
     }
-    void Start()
-    {
-        
-    }
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Hitbox") && isUnlock == false)
         {
             isUnlock = true;
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.open_chest);
             ani.SetTrigger("isUnlock");
-            Instantiate(item, transform.position, Quaternion.identity);
+            for(int i = 0; i < itemData.data.Count; i++)
+            {
+                if (itemData.data[i].type == itemType)
+                {
+                    if (itemData.data[i].type == ItemType.Key) { }
+                    Instantiate(itemData.data[i].item, transform.position, Quaternion.identity);
+                }
+            }
+          
         }
     }
 

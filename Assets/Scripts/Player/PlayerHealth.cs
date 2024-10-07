@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : Singleton<PlayerHealth>
 {
     [Header("Singleton")]
     public static PlayerHealth instance;
 
     [Header("Health")]
-    public int health;
+    public float health;
+    float curHealth;
 
     [Header("Orther")]
     private Animator ani;
@@ -21,25 +22,41 @@ public class PlayerHealth : MonoBehaviour
     }
     void Start()
     {
-        
+        curHealth = health;
     }
 
 
-    void Update()
-    {
-        CheckHealth();
-    }
+
     public void TakeDamage(int value)
     {
-        health -= value;
+        curHealth -= value;
+        HealthBarManager.Instance.SetSliderHealth(health,curHealth);
+        CheckHealth();
+
+    }
+    public void ReHealth()
+    {
+        float bloodLost = health - curHealth;
+        float rehealthBlood = curHealth * 0.25f;
+        if (bloodLost < rehealthBlood)
+        {
+            curHealth += bloodLost;
+        }
+        else
+        {
+            curHealth += rehealthBlood;
+        }
+        HealthBarManager.Instance.SetSliderHealth(health, curHealth);
     }
     private void CheckHealth()
     {
-        if(health <= 0)
+        if(curHealth <= 0)
         {
             Player.instance.SetPlayerDead();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.game_over);
             ani.SetBool("dead",true);
             collider.enabled = false;
+            GameManager.Instance.ShowGameOverPanel();
             return;
         }
     }

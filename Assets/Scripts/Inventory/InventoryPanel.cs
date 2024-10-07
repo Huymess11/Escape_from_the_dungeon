@@ -23,11 +23,13 @@ public class InventoryPanel : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.C)&& !isOpenInventory)
         {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.inventory);
             isOpenInventory = true;
             ani.SetBool("isOpen",true);
         }
         else if(Input.GetKeyDown(KeyCode.C)&& isOpenInventory)
         {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.inventory);
             isOpenInventory = false;
             ani.SetBool("isOpen",false);
         }

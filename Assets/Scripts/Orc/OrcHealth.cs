@@ -9,7 +9,7 @@ public class OrcHealth : MonoBehaviour
     public static OrcHealth instance;
 
     [Header("Health")]
-    public int health;
+    public float health;
 
     [Header("Others")]
     Collider2D collider;
@@ -31,14 +31,21 @@ public class OrcHealth : MonoBehaviour
         if (health <= 0)
         {
             collider.enabled = false;
-            Orc.instance.SetOrcDead();
+            this.gameObject.GetComponent<Orc>().SetOrcDead();
             ani.SetTrigger("isDead");
             return;
         }
     }
 
-    public void TakeDamage( int value)
+    public void TakeDamage( float value)
     {
         health -= value;
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Hitbox"))
+        {
+            TakeDamage(Player.Instance.GetDamage());
+        }
     }
 }

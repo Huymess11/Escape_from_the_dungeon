@@ -9,6 +9,7 @@ TagManager:
   - Orc
   - Bag
   - Gate
+  - Wall
   layers:
   - Default
   - TransparentFX

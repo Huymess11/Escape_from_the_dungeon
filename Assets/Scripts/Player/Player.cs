@@ -1,18 +1,20 @@
- using System.Collections;
+using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
 
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>
 {
     [Header("Singleton")]
     public static Player instance;
 
     [Header("State")]
     public  bool isShield;
-
+    private bool isHaveKey;
 
     [Header("Move")]
     public float speed;
@@ -31,12 +33,17 @@ public class Player : MonoBehaviour
     [Header("Dead")]
     private bool isDead = false;
 
-    
+
     [Header("Orthers")]
     private bool isAttack;
     private bool isDmg;
     private Rigidbody2D rb;
     private Animator ani;
+    [SerializeField] private float playerDamage = 25;
+    float m_playerDamage;
+    [SerializeField] private GameObject keyPS;
+    [SerializeField] private GameObject bubbleSheild;
+    private Coroutine buffCoroutine;
 
     private void Awake()
     {
@@ -44,9 +51,9 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         ani = GetComponent<Animator>();
     }
-    void Start()
+    private void Start()
     {
-
+        m_playerDamage = playerDamage;
     }
     void Update()
     {
@@ -97,6 +104,7 @@ public class Player : MonoBehaviour
     {
         rb.velocity = Vector2.zero;
         ani.SetBool("attack", true);
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.attack);
         isAttack = true;
         yield return null;
         ani.SetBool("attack", false);
@@ -108,6 +116,7 @@ public class Player : MonoBehaviour
     {
         rb.velocity = Vector2.zero;
         ani.SetBool("dmg", true);
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.hit);
         isDmg = true;
         yield return null;
         ani.SetBool("dmg", false);
@@ -128,19 +137,67 @@ public class Player : MonoBehaviour
         canDash = true;
 
     }
+    public void SetIsHaveKey(bool status)
+    {
+        isHaveKey = status;
+        keyPS.SetActive(status);
+    }
+    public void SetSheild()
+    {
+        isShield = true;
+        bubbleSheild.SetActive(true);
+    }
+    public void SetBuffStrength()
+    {
+        if (buffCoroutine != null)
+        {
+            StopCoroutine(buffCoroutine);
+        }
+        buffCoroutine = StartCoroutine(BuffStrength());
+    }
+    IEnumerator BuffStrength()
+    {
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.upgrade);
+        transform.DOScale(1.5f, 1f);
+        SetDamage(playerDamage + playerDamage * 0.5f);
+        yield return new WaitForSeconds(10f);
+        transform.DOScale(1f, 1f);
+        SetDamage(m_playerDamage);
+        buffCoroutine = null;
+    }
+    private void SetDamage(float value)
+    {
+        playerDamage = value;
+    }
+    public float GetDamage()
+    {
+        return playerDamage;
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("OrcHitbox"))
         {
             if (isShield == false) 
             {
-              PlayerHealth.instance.TakeDamage(25);
+              PlayerHealth.instance.TakeDamage(10);
               StartCoroutine(PlayerDmg());
             }
             else if(isShield == true)
             {
                 isShield = false;
+                bubbleSheild.SetActive(false);
             }
+        }
+
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Gate") && isHaveKey)
+        {
+            collision.gameObject.SetActive(false);
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.unlock);
+            SetIsHaveKey(false);
+            GameManager.Instance.NextLevel();
         }
     }
 }

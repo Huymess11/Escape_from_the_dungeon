@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour
 {
-    public GameObject shield;
-
     public void GetShield()
     {
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.click);
         Destroy(gameObject);
-        Instantiate(shield, Player.instance.transform, false);
-        Player.instance.isShield = true;
+        Player.Instance.SetSheild();
     }
 }
